@@ -64,8 +64,7 @@ co.edu.smarthome
 └── repository   Contratos y repositorios temporales en memoria
 ```
 
-## Qué hicimos nosotros y por dónde sigue el equipo
-
+## Que se hizo
 La idea de esta primera parte es dejar los paquetes y las clases que ya acordamos para el alcance, más un ejemplo pequeño que sí se puede ejecutar. Así todos pueden abrir el proyecto, repartirse esos archivos y continuar sobre la misma estructura. No estamos diciendo que el sistema completo ya esté terminado.
 
 ### Lo que ya dejamos andando o preparado
