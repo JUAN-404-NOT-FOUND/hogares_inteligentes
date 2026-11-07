@@ -85,7 +85,7 @@ La idea de esta primera parte es dejar los paquetes y las clases que ya acordamo
 4. **Acciones, grupos e historial:** conectar `InvocadorComandos` a la interfaz, completar acciones de `GrupoDispositivos` y mostrar eventos con `ServicioHistorial`.
 5. **Integración y entrega:** acordar si se necesita guardar en archivo o base de datos, sustituir los repositorios en memoria si hace falta y preparar documentación, demo y video.
 
-Nos podemos repartir estos bloques según cuántos seamos y luego integrar el trabajo en las mismas clases y paquetes. El enunciado deja que cada grupo defina las funciones; esta es la propuesta de alcance que armamos nosotros. Antes de entregar, revisemos juntos que cada patrón obligatorio y los adicionales aparezcan en una función que se pueda mostrar, porque tener la clase creada por sí sola no significa que el patrón ya esté integrado.
+
 
 ## Patrones del parcial
 
