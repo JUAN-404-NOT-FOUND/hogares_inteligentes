@@ -2,7 +2,6 @@
 
 Base inicial para el parcial de Patrones de Diseño. Proyecto Maven para Java 21, JavaFX y FXML, pensado para abrirse directamente en IntelliJ IDEA.
 
-Los nombres de las clases del dominio están en español. Se conservan en inglés los nombres oficiales de los patrones y la interfaz `Command` para que puedan identificarse fácilmente en la sustentación.
 
 ## Abrir y ejecutar
 
