@@ -54,15 +54,17 @@ co.edu.smarthome
                         RepositorioEventosMemoria
 ```
 
-## Flujo que ya se puede ejecutar
+## Flujos que ya se pueden ejecutar
 
 `vista-hogar.fxml` → `ControladorHogar` → `Luz` → `EstadoApagado` / `EstadoEncendido` → `ObservadorDispositivo` → actualización de la pantalla.
+
+`vista-hogar.fxml` → `ControladorHogar` → `AdaptadorSensorMovimiento` → `MediadorHogar` → regla activa de la sala → estrategia elegida → cambio del estado de `Luz` → Observer actualiza la pantalla.
 
 ## Pendiente de integración
 
 - Las pantallas de dispositivos, automatizaciones e historial son puntos de partida: conectar sus controladores con los servicios y completar las acciones.
 - Registrar los dispositivos creados en `ServicioDispositivos` y asignarlos a `Habitacion` y `Hogar`.
-- Conectar `SensorMovimientoAntiguo` → `AdaptadorSensorMovimiento` → `MediadorHogar` → estrategia seleccionada desde una `ReglaAutomatizacion`.
+- Reemplazar el sensor simulado por una fuente real, si el grupo va a usar hardware, y administrar varias reglas desde `ServicioAutomatizaciones`.
 - Usar `InvocadorComandos` desde la interfaz para ejecutar y deshacer acciones; ampliar los comandos cuando existan más dispositivos.
 - Completar operaciones sobre todos los miembros de `GrupoDispositivos`.
 - Cambiar los repositorios en memoria por la persistencia que acuerde el grupo, si el alcance lo requiere.

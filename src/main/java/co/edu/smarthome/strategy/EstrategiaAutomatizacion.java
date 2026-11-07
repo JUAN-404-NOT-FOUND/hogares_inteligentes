@@ -4,5 +4,5 @@ import co.edu.smarthome.model.device.Luz;
 
 @FunctionalInterface
 public interface EstrategiaAutomatizacion {
-    void alDetectarMovimiento(Luz luz);
+    void alCambiarMovimiento(Luz luz, boolean hayMovimiento);
 }
