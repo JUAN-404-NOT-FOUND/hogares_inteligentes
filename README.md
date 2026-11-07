@@ -57,24 +57,31 @@ co.edu.smarthome
 └── repository   Persistencia (pendiente)
 ```
 
-## Reparto para continuar con el equipo
+## Qué hicimos nosotros y por dónde sigue el equipo
 
-### Ya queda como punto de partida
+La idea de esta primera parte es dejar armado el esqueleto y un ejemplo pequeño que sí se pueda ejecutar. Así todos pueden abrir el proyecto, entender cómo se conectan las capas y continuar sobre los mismos paquetes. No estamos diciendo que el sistema completo ya esté terminado.
 
-- Estructura Maven y paquetes base.
-- Flujo pequeño de luz: vista FXML → controlador → modelo → notificación Observer → actualización de la vista.
-- Clases iniciales de Command, Strategy, Mediator y patrones adicionales para extender.
-- Diagrama, árbol de paquetes y estas instrucciones de ejecución.
+### Lo que ya dejamos andando o preparado
 
-### Siguiente trabajo para el equipo
+- Dejamos Maven, JavaFX, el árbol de paquetes, el diagrama y una guía para abrirlo en IntelliJ.
+- La pantalla de `vista-hogar.fxml` permite encender y apagar una luz. El recorrido es vista → `ControladorHogar` → `Luz`; cuando cambia el estado, `ObservadorDispositivo` avisa para actualizar la pantalla. Ese es el ejemplo que podemos usar para guiarnos.
+- `Luz`, `EstadoDispositivo`, `EstadoEncendido` y `EstadoApagado` ya muestran el patrón State.
+- `Command` y `ComandoCambiarEstadoLuz` ya tienen una acción para cambiar la luz y deshacerla. Falta conectarlos a botones y guardar un historial de acciones.
+- `EstrategiaAutomatizacion` y `EstrategiaEncenderLuzPorMovimiento` dejan lista una regla de automatización. Falta conectarla a la lectura de un sensor y permitir escoger reglas.
+- `MediadorHogar` está como punto de coordinación; falta integrarlo al flujo completo del sensor, las reglas y los dispositivos.
+- `CreadorDispositivo` / `CreadorLuz`, `SensorMovimiento` / `AdaptadorSensorMovimiento` y `GrupoDispositivos` ya tienen clases iniciales para Factory Method, Adapter y Composite. Hay que completar y demostrar esos patrones con funciones reales.
+- Los paquetes `service`, `repository` y `model.event` quedan como espacio para agregar casos de uso, persistencia y eventos cuando el equipo los necesite.
 
-1. **Integrante A — interfaz:** mejorar FXML/CSS y crear vistas para listar, crear y controlar dispositivos.
-2. **Integrante B — dominio y automatización:** agregar `SensorMovimiento`, conectar eventos de movimiento con `MediadorHogar` y estrategias seleccionables.
-3. **Integrante C — acciones y grupos:** agregar historial/deshacer de comandos y operaciones grupales reales con Composite.
-4. **Integrante D — persistencia y entrega:** implementar repositorio, documentación final, capturas/demo y preparar el video de presentación.
+### Reparto sugerido para seguir
 
-Si son menos integrantes, pueden combinar los bloques. Antes de entregar deben verificar que cada patrón participa en una funcionalidad observable y justificar su uso en el README y el video.
+1. **Interfaz:** continuar desde `vista-hogar.fxml` y `ControladorHogar`; agregar pantallas para listar, crear y controlar varios dispositivos.
+2. **Sensores y automatización:** completar `SensorMovimientoAntiguo` y `AdaptadorSensorMovimiento`, definir los eventos que hagan falta y conectar el sensor con `EstrategiaEncenderLuzPorMovimiento` y `MediadorHogar`.
+3. **Comandos y grupos:** conectar `ComandoCambiarEstadoLuz` a la interfaz, agregar historial/deshacer y completar `GrupoDispositivos` para operar varios dispositivos juntos.
+4. **Persistencia y entrega:** definir el repositorio que necesite el proyecto, guardar y recuperar dispositivos, y apoyar la documentación, la demo y el video.
+
+Nos podemos repartir estos bloques según cuántos seamos y luego integrar el trabajo en las mismas clases y paquetes. Antes de entregar, revisemos juntos que cada patrón obligatorio y los adicionales aparezcan en una función que se pueda mostrar, porque tener la clase creada por sí sola no significa que el patrón ya esté integrado.
 
 ## Patrones del parcial
 
 Obligatorios: Observer, Strategy, Command, State y Mediator. Selección adicional propuesta: Factory Method (creacional, peso 2), Adapter (estructural, peso 2) y Composite (estructural, peso 3); suma de complejidad: 7. La rúbrica evalúa implementación e integración, así que los adicionales deben terminarse y demostrarse en funcionalidades reales.
+
