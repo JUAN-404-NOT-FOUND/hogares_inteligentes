@@ -21,7 +21,7 @@ Base inicial para el parcial de Patrones de Diseño. Proyecto Maven para Java 21
 - `Mediator`: `MediadorHogar` coordina la estrategia y la luz de una habitación.
 - Adicionales iniciados: `Factory Method` (`CreadorDispositivo` / `CreadorLuz`), `Adapter` para normalizar la lectura de un sensor legado y `Composite` (`GrupoDispositivos`) para tratar grupos como dispositivos.
 
-Esta es una base de trabajo; algunos patrones adicionales solo tienen su primer esqueleto y deben conectarse a flujos reales antes de presentarlos como terminados.
+Esta es una base de trabajo; algunos patrones adicionales solo tienen su primer esqueleto y deben conectarse a flujos reales.
 
 ## Diagrama de arquitectura
 
