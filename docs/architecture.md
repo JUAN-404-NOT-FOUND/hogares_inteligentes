@@ -1,29 +1,70 @@
-# Arquitectura inicial
+# Arquitectura base del proyecto
 
-## Decisión de capas
+Esta organización deja puestos los lugares donde vamos a trabajar. Solo el flujo de la luz está conectado de principio a fin; los demás controladores y vistas muestran dónde continuar. Las interfaces de repositorio y sus versiones en memoria sirven como base para que el equipo agregue la persistencia que decida.
 
-La interfaz JavaFX/FXML solo presenta información y recoge acciones. Los controladores delegan en servicios de aplicación. Los servicios coordinan modelos, comandos, estrategias y repositorios. Los modelos representan dispositivos y sus estados; no dependen de JavaFX.
+## Capas
 
 ```mermaid
 flowchart TD
-    V[Vista JavaFX / FXML] --> C[Controladores]
-    C --> S[Servicios de aplicación]
-    S --> M[Modelos: dispositivos, sensores y eventos]
+    V[JavaFX / FXML] --> C[Controladores]
+    C --> S[Servicios]
+    S --> M[Modelos: hogar, habitaciones, dispositivos, reglas y eventos]
     S --> R[Repositorios]
+    R --> DB[Memoria ahora / persistencia por definir]
     M --> O[Observer]
     M --> ST[State]
     S --> CM[Command]
     S --> STR[Strategy]
     S --> MED[Mediator]
     S --> F[Factory Method]
-    M --> A[Adapter]
-    M --> CO[Composite]
+    S --> AD[Adapter]
+    S --> CO[Composite]
 ```
 
-## Primer flujo funcional
+## Paquetes y clases
 
-`vista-hogar.fxml` → `ControladorHogar` → `Luz.encender()` / `apagar()` → `EstadoDispositivo` cambia el estado → `ObservadorDispositivo` notifica al controlador → etiquetas de la pantalla se actualizan.
+```text
+co.edu.smarthome
+├── app                 AplicacionHogar
+├── controller          ControladorHogar, ControladorDispositivos,
+│                       ControladorAutomatizaciones, ControladorHistorial
+├── model
+│   ├── home            Hogar, Habitacion
+│   ├── device          Dispositivo, Luz, Termostato, CerraduraInteligente
+│   ├── automation      ReglaAutomatizacion
+│   ├── event           EventoHogar, TipoEventoHogar
+│   └── state           ContextoLuz, EstadoDispositivo,
+│                       EstadoEncendido, EstadoApagado
+├── observer            ObservadorDispositivo, ObservadorEventosHogar
+├── command             Command, ComandoCambiarEstadoLuz, InvocadorComandos
+├── strategy            EstrategiaAutomatizacion,
+│                       EstrategiaEncenderLuzPorMovimiento
+├── mediator             MediadorHogar
+├── factory              CreadorDispositivo, CreadorLuz,
+│                       CreadorTermostato, CreadorCerradura
+├── adapter              SensorMovimiento, SensorMovimientoAntiguo,
+│                       AdaptadorSensorMovimiento
+├── composite             GrupoDispositivos
+├── service               ServicioDispositivos, ServicioHogares,
+│                       ServicioAutomatizaciones, ServicioHistorial
+└── repository            RepositorioDispositivos, RepositorioHogares,
+                        RepositorioReglas, RepositorioEventos
+    └── memory            RepositorioDispositivosMemoria,
+                        RepositorioHogaresMemoria, RepositorioReglasMemoria,
+                        RepositorioEventosMemoria
+```
 
-## Límites de esta entrega
+## Flujo que ya se puede ejecutar
 
-La pantalla solo demuestra una luz. Aún no hay sensores reales, persistencia, catálogo de dispositivos, selector de estrategias, historial de comandos ni operaciones de grupo. Esos son puntos definidos para continuar en equipo.
+`vista-hogar.fxml` → `ControladorHogar` → `Luz` → `EstadoApagado` / `EstadoEncendido` → `ObservadorDispositivo` → actualización de la pantalla.
+
+## Pendiente de integración
+
+- Las pantallas de dispositivos, automatizaciones e historial son puntos de partida: conectar sus controladores con los servicios y completar las acciones.
+- Registrar los dispositivos creados en `ServicioDispositivos` y asignarlos a `Habitacion` y `Hogar`.
+- Conectar `SensorMovimientoAntiguo` → `AdaptadorSensorMovimiento` → `MediadorHogar` → estrategia seleccionada desde una `ReglaAutomatizacion`.
+- Usar `InvocadorComandos` desde la interfaz para ejecutar y deshacer acciones; ampliar los comandos cuando existan más dispositivos.
+- Completar operaciones sobre todos los miembros de `GrupoDispositivos`.
+- Cambiar los repositorios en memoria por la persistencia que acuerde el grupo, si el alcance lo requiere.
+
+Los patrones solo se pueden presentar como implementados cuando participen en esos flujos; que exista una clase con el nombre del patrón no alcanza para la evaluación.
