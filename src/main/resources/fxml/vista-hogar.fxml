@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="co.edu.smarthome.controller.ControladorHogar" spacing="14" alignment="CENTER">
+    <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+    <Label text="Hogares Inteligentes" styleClass="title" />
+    <Label fx:id="etiquetaEstado" text="Estado de la luz" />
+    <VBox spacing="8">
+        <Button text="Encender luz" onAction="#encender" maxWidth="220" />
+        <Button text="Apagar luz" onAction="#apagar" maxWidth="220" />
+    </VBox>
+    <Label fx:id="etiquetaMensaje" text="Listo" />
+</VBox>
