@@ -3,6 +3,18 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="co.edu.smarthome.controller.ControladorHistorial" prefWidth="620" prefHeight="420">
-    <top><VBox spacing="8" style="-fx-padding: 20;"><Label text="Actividad reciente" style="-fx-font-size: 22px; -fx-font-weight: bold;"/><Label fx:id="etiquetaMensaje" text=""/></VBox></top>
-    <center><ListView fx:id="listaEventos" BorderPane.alignment="CENTER"/></center>
+    <top>
+        <VBox spacing="8" style="-fx-padding: 20;">
+            <HBox spacing="8">
+                <Button text="Inicio" onAction="#irAInicio" />
+                <Button text="Dispositivos" onAction="#irADispositivos" />
+                <Button text="Automatizaciones" onAction="#irAAutomatizaciones" />
+                <Button text="Historial" onAction="#irAHistorial" />
+            </HBox>
+            <Label text="Actividad reciente" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+            <Label fx:id="etiquetaMensaje" text=""/>
+        </VBox>
+    </top>
+    <center>
+        <ListView fx:id="listaEventos" BorderPane.alignment="CENTER"/></center>
 </BorderPane>
