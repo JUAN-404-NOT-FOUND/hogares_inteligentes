@@ -10,7 +10,7 @@ public final class ControladorAutomatizaciones extends ControladorNavegable{
     @FXML private ListView<String> listaReglas;
     @FXML private Label etiquetaMensaje;
 
-    public ControladorAutomatizaciones(ContextoAplicacion contexto, NavegadorHogarnavegador){
+    public ControladorAutomatizaciones(ContextoAplicacion contexto, NavegadorHogar navegador){
         super(contexto, navegador);
     }
 

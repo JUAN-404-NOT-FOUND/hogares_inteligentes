@@ -4,6 +4,7 @@ import co.edu.smarthome.adapter.AdaptadorSensorMovimiento;
 import co.edu.smarthome.adapter.SensorMovimientoAntiguo;
 import co.edu.smarthome.model.device.Luz;
 import co.edu.smarthome.observer.ObservadorDispositivo;
+import co.edu.smarthome.service.ContextoAplicacion;
 import co.edu.smarthome.strategy.EstrategiaEncenderLuzPorMovimiento;
 import co.edu.smarthome.strategy.EstrategiaSeguirMovimiento;
 import javafx.fxml.FXML;

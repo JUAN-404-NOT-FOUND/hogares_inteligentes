@@ -64,10 +64,10 @@ public final class NavegadorHogar {
         if (tipo == ControladorHogar.class) {
             return new ControladorHogar(contexto, this);
         }
-        if (tipo == ControladorDispositivos(contexto, this)){
+        if (tipo == ControladorDispositivos.class){
             return new ControladorDispositivos(contexto, this);
         }
-        if (tipo == ControladorAutomatizaciones()){
+        if (tipo == ControladorAutomatizaciones.class){
             return new ControladorAutomatizaciones(contexto, this);
         }
         if (tipo == ControladorHistorial.class) {
