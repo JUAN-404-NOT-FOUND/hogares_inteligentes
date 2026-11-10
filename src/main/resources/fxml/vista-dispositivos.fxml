@@ -3,7 +3,35 @@
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="co.edu.smarthome.controller.ControladorDispositivos" prefWidth="620" prefHeight="420">
-    <top><VBox spacing="8" style="-fx-padding: 20;"><Label text="Dispositivos del hogar" style="-fx-font-size: 22px; -fx-font-weight: bold;"/><Label fx:id="etiquetaMensaje" text=""/></VBox></top>
-    <center><ListView fx:id="listaDispositivos" BorderPane.alignment="CENTER"/></center>
-    <bottom><HBox spacing="10" style="-fx-padding: 16;"><Button text="Agregar" onAction="#agregarDispositivo"/><Button text="Eliminar seleccionado" onAction="#eliminarDispositivo"/></HBox></bottom>
+    <top>
+        <VBox spacing="8" style="-fx-padding: 20;">
+            <HBox spacing="8">
+                <Button text="Inicio" onAction="#irAInicio" />
+                <Button text="Dispositivos" onAction="#irADispositivos" />
+                <Button text="Automatizaciones" onAction="#irAAutomatizaciones" />
+                <Button text="Historial" onAction="#irAHistorial" />
+            </HBox>
+            <Label text="Dispositivos del hogar" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+            <Label fx:id="etiquetaMensaje" text=""/>
+        </VBox>
+    </top>
+    <center>
+        <ListView fx:id="listaDispositivos"
+                  BorderPane.alignment="CENTER" />
+    </center>
+    <bottom>
+        <VBox spacing="8" style="-fx-padding: 16;">
+            <HBox spacing="10">
+                <Button text="Agregar" onAction="#agregarDispositivo" />
+                <Button text="Eliminar seleccionado"
+                        onAction="#eliminarDispositivo" />
+            </HBox>
+            <HBox spacing="10">
+                <Button text="Aplicar acción"
+                        onAction="#ejecutarAccion" />
+                <Button text="Deshacer última acción"
+                        onAction="#deshacerUltimaAccion" />
+            </HBox>
+        </VBox>
+    </bottom>
 </BorderPane>

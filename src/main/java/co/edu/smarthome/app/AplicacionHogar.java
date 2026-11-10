@@ -1,5 +1,7 @@
 package co.edu.smarthome.app;
 
+import co.edu.smarthome.controller.NavegadorHogar;
+import co.edu.smarthome.service.ContextoAplicacion;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,14 +11,15 @@ import java.io.IOException;
 
 public class AplicacionHogar extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                AplicacionHogar.class.getResource("/fxml/vista-hogar.fxml"));
-        Scene scene = new Scene(loader.load(), 900, 600);
+    public void start(Stage stage) {
+        ContextoAplicacion contexto = new ContextoAplicacion();
+        NavegadorHogar navegador = new NavegadorHogar(stage, contexto);
+
         stage.setTitle("Hogares Inteligentes");
         stage.setMinWidth(720);
         stage.setMinHeight(480);
-        stage.setScene(scene);
+
+        navegador.mostrarInicio();
         stage.show();
     }
 

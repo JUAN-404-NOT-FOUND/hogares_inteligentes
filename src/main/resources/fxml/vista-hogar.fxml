@@ -8,6 +8,12 @@
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="co.edu.smarthome.controller.ControladorHogar" spacing="14" alignment="CENTER">
     <padding><Insets top="28" right="28" bottom="28" left="28"/></padding>
+    <HBox spacing="8" alignment="CENTER">
+        <Button text="Inicio" onAction="#irAInicio" />
+        <Button text="Dispositivos" onAction="#irADispositivos" />
+        <Button text="Automatizaciones" onAction="#irAAutomatizaciones" />
+        <Button text="Historial" onAction="#irAHistorial" />
+    </HBox>
     <Label text="Hogares Inteligentes" styleClass="title" />
     <Label fx:id="etiquetaEstado" text="Estado de la luz" />
     <HBox spacing="8" alignment="CENTER">

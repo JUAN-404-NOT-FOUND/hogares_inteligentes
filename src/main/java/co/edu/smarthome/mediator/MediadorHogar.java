@@ -22,6 +22,23 @@ public final class MediadorHogar {
                 .add(luz);
     }
 
+    public void quitarLuz(Luz luz) {
+        Objects.requireNonNull(luz, "La luz es obligatoria.");
+
+        String clave = normalizar(luz.obtenerHabitacion());
+        List<Luz> luces = lucesPorHabitacion.get(clave);
+
+        if (luces == null) {
+            return;
+        }
+
+        luces.remove(luz);
+
+        if (luces.isEmpty()) {
+            lucesPorHabitacion.remove(clave, luces);
+        }
+    }
+
     public void registrarRegla(ReglaAutomatizacion regla) {
         Objects.requireNonNull(regla, "La regla es obligatoria.");
         reglasPorHabitacion.computeIfAbsent(normalizar(regla.obtenerHabitacion()), ignorada -> new CopyOnWriteArrayList<>())
