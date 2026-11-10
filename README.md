@@ -36,6 +36,8 @@ La selección adicional es Factory Method (2), Adapter (2) y Composite (3): tres
 
 ## Arquitectura
 
+Consulta [la guía de arquitectura y clases](docs/architecture.md) para ver las responsabilidades de los paquetes y los flujos del código.
+
 La interfaz FXML llama a controladores, que coordinan servicios y modelos. Los servicios usan repositorios en memoria. ContextoAplicacion comparte esos componentes durante la ejecución.
 
 ## Guion de demostración y entrega

@@ -1,5 +1,6 @@
 package co.edu.smarthome.model.event;
 
+/** Categorías de sucesos que pueden guardarse en el historial del hogar. */
 public enum TipoEventoHogar {
     DISPOSITIVO_CREADO,
     DISPOSITIVO_ELIMINADO,

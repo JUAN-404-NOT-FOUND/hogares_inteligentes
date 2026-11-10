@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 
+/** Conecta la pantalla principal con la luz de la sala, el sensor simulado y sus automatizaciones. */
 public class ControladorHogar extends ControladorNavegable
         implements ObservadorDispositivo {
 

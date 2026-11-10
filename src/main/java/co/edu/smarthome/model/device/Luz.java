@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/** Luz con estado State y notificación Observer cuando cambia entre encendida y apagada. */
 public final class Luz implements DispositivoControlable, ContextoLuz {
     private final String id = UUID.randomUUID().toString();
     private final String nombre;

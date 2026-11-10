@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/** Ensambla y comparte servicios, repositorios en memoria y coordinadores durante la ejecución. */
 public final class ContextoAplicacion {
     private final ServicioHogares servicioHogares = new ServicioHogares(new RepositorioHogaresMemoria());
     private final ServicioDispositivos servicioDispositivos = new ServicioDispositivos(new RepositorioDispositivosMemoria());

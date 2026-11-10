@@ -18,6 +18,7 @@ import javafx.scene.control.TextInputDialog;
 import java.util.List;
 import java.util.Optional;
 
+/** Gestiona la vista de reglas, su estrategia seleccionada y su activación por habitación. */
 public final class ControladorAutomatizaciones
         extends ControladorNavegable {
 

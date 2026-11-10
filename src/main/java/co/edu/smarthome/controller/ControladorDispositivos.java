@@ -29,6 +29,7 @@ import javafx.scene.control.SelectionMode;
 import java.util.List;
 import java.util.Optional;
 
+/** Coordina las acciones de la pantalla para crear, retirar y controlar dispositivos y grupos. */
 public final class ControladorDispositivos extends ControladorNavegable {
     @FXML private ListView<Dispositivo> listaDispositivos;
     @FXML private Label etiquetaMensaje;
