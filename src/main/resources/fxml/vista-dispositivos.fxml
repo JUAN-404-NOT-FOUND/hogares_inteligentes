@@ -15,6 +15,23 @@
             <Label fx:id="etiquetaMensaje" text=""/>
         </VBox>
     </top>
-    <center><ListView fx:id="listaDispositivos" BorderPane.alignment="CENTER"/></center>
-    <bottom><HBox spacing="10" style="-fx-padding: 16;"><Button text="Agregar" onAction="#agregarDispositivo"/><Button text="Eliminar seleccionado" onAction="#eliminarDispositivo"/></HBox></bottom>
+    <center>
+        <ListView fx:id="listaDispositivos"
+                  BorderPane.alignment="CENTER" />
+    </center>
+    <bottom>
+        <VBox spacing="8" style="-fx-padding: 16;">
+            <HBox spacing="10">
+                <Button text="Agregar" onAction="#agregarDispositivo" />
+                <Button text="Eliminar seleccionado"
+                        onAction="#eliminarDispositivo" />
+            </HBox>
+            <HBox spacing="10">
+                <Button text="Aplicar acción"
+                        onAction="#ejecutarAccion" />
+                <Button text="Deshacer última acción"
+                        onAction="#deshacerUltimaAccion" />
+            </HBox>
+        </VBox>
+    </bottom>
 </BorderPane>
