@@ -18,6 +18,7 @@ public final class NavegadorHogar {
 
     private final Stage stage;
     private final ContextoAplicacion contexto;
+    private ControladorNavegable controladorActual;
 
     public NavegadorHogar(Stage stage, ContextoAplicacion contexto) {
         this.stage = Objects.requireNonNull(stage);
@@ -50,11 +51,14 @@ public final class NavegadorHogar {
 
         try{
             Parent raiz = cargador.load();
+            ControladorNavegable siguiente = (ControladorNavegable) cargador.getController();
+            if (controladorActual != null) controladorActual.alOcultar();
             if(stage.getScene() == null) {
                 stage.setScene(new Scene(raiz, 900, 600));
             }else {
                 stage.getScene().setRoot(raiz);
             }
+            controladorActual = siguiente;
         }catch (IOException error) {
             throw new IllegalArgumentException("No se pudo cargar la vista:" + recurso, error);
         }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class Luz implements Dispositivo, ContextoLuz {
+public final class Luz implements DispositivoControlable, ContextoLuz {
     private final String id = UUID.randomUUID().toString();
     private final String nombre;
     private final String habitacion;
@@ -32,8 +32,8 @@ public final class Luz implements Dispositivo, ContextoLuz {
     public void agregarObservador(ObservadorDispositivo observador) { observadores.add(observador); }
     public void eliminarObservador(ObservadorDispositivo observador) { observadores.remove(observador); }
 
-    public void encender() { estado.encender(this); }
-    public void apagar() { estado.apagar(this); }
+    @Override public void encender() { estado.encender(this); }
+    @Override public void apagar() { estado.apagar(this); }
 
     @Override
     public void cambiarEstado(EstadoDispositivo nuevoEstado) {

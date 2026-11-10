@@ -1,9 +1,12 @@
 package co.edu.smarthome.model.event;
 
-/** Tipos de sucesos que pueden registrarse o activar automatizaciones. */
 public enum TipoEventoHogar {
     DISPOSITIVO_CREADO,
+    DISPOSITIVO_ELIMINADO,
     ESTADO_DISPOSITIVO_CAMBIADO,
     MOVIMIENTO_DETECTADO,
-    AUTOMATIZACION_EJECUTADA
+    AUTOMATIZACION_EJECUTADA,
+    AUTOMATIZACION_CONFIGURADA,
+    GRUPO_CREADO,
+    ACCION_GRUPO_EJECUTADA
 }
