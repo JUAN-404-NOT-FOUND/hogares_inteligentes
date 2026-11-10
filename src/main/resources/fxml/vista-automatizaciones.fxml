@@ -16,5 +16,16 @@
         </VBox>
     </top>
     <center><ListView fx:id="listaReglas" BorderPane.alignment="CENTER"/></center>
-    <bottom><HBox spacing="10" style="-fx-padding: 16;"><Button text="Crear regla" onAction="#crearRegla"/><Button text="Activar / desactivar" onAction="#cambiarEstadoRegla"/></HBox></bottom>
+    <bottom>
+        <VBox spacing="8" style="-fx-padding: 16;">
+            <HBox spacing="10">
+                <Button text="Crear regla"
+                        onAction="#crearRegla" />
+                <Button text="Cambiar estrategia"
+                        onAction="#cambiarEstrategia" />
+            </HBox>
+            <Button text="Activar / desactivar"
+                    onAction="#cambiarEstadoRegla" />
+        </VBox>
+    </bottom>
 </BorderPane>
