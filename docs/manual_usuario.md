@@ -2,7 +2,7 @@
 
 ## 1. Iniciar la aplicación
 
-El proyecto requiere **JDK 21** y Maven. Abre `C:\keepcoding\hogares_inteligentes` en IntelliJ IDEA, configura el JDK 21 y carga el proyecto Maven desde `pom.xml`. Desde la terminal de IntelliJ, ubicada en la raíz del proyecto, ejecuta:
+El proyecto requiere **JDK 21** y Maven. Abre en IntelliJ IDEA la carpeta raíz `hogares_inteligentes` y carga el proyecto Maven desde `pom.xml`. Desde la terminal de IntelliJ, ubicada en la raíz del proyecto, ejecuta:
 
 ```bash
 mvn javafx:run
