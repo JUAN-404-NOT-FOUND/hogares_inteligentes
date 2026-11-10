@@ -19,6 +19,10 @@ Los dispositivos y el historial se guardan en memoria y se reinician al cerrar l
 2. Importa el proyecto Maven y configura un JDK 21.
 3. Ejecuta co.edu.smarthome.app.AplicacionHogar o el comando mvn javafx:run.
 
+## Manual de usuario
+
+Consulta el [manual de usuario](docs/manual_usuario.md) para seguir paso a paso las funciones de la aplicación.
+
 ## Patrones y ubicación
 
 | Patrón | Clases | Uso que se muestra |
