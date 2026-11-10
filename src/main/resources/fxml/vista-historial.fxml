@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="co.edu.smarthome.controller.ControladorHistorial" prefWidth="620" prefHeight="420">
+            fx:controller="co.edu.smarthome.controller.ControladorHistorial" prefWidth="720" prefHeight="520">
     <top>
         <VBox spacing="8" style="-fx-padding: 20;">
             <HBox spacing="8">

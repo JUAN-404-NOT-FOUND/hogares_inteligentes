@@ -1,6 +1,7 @@
 package co.edu.smarthome.controller;
 
 import co.edu.smarthome.command.Command;
+import co.edu.smarthome.composite.GrupoDispositivos;
 import co.edu.smarthome.command.ComandoAjustarTemperatura;
 import co.edu.smarthome.command.ComandoCambiarCerradura;
 import co.edu.smarthome.command.ComandoCambiarEstadoLuz;
@@ -10,6 +11,8 @@ import co.edu.smarthome.factory.CreadorLuz;
 import co.edu.smarthome.factory.CreadorTermostato;
 import co.edu.smarthome.model.device.CerraduraInteligente;
 import co.edu.smarthome.model.device.Dispositivo;
+import co.edu.smarthome.model.device.DispositivoControlable;
+import co.edu.smarthome.model.event.TipoEventoHogar;
 import co.edu.smarthome.model.device.Luz;
 import co.edu.smarthome.model.device.Termostato;
 import co.edu.smarthome.service.ContextoAplicacion;
@@ -21,12 +24,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.SelectionMode;
 
+import java.util.List;
 import java.util.Optional;
 
+/** Coordina las acciones de la pantalla para crear, retirar y controlar dispositivos y grupos. */
 public final class ControladorDispositivos extends ControladorNavegable {
     @FXML private ListView<Dispositivo> listaDispositivos;
     @FXML private Label etiquetaMensaje;
+    @FXML private Label etiquetaGrupo;
 
     public ControladorDispositivos(
             ContextoAplicacion contexto,
@@ -37,6 +44,7 @@ public final class ControladorDispositivos extends ControladorNavegable {
 
     @FXML
     private void initialize() {
+        listaDispositivos.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listaDispositivos.setCellFactory(ignorado -> new ListCell<>() {
             @Override
             protected void updateItem(Dispositivo dispositivo, boolean vacio) {
@@ -112,11 +120,7 @@ public final class ControladorDispositivos extends ControladorNavegable {
         };
 
         Dispositivo dispositivo = creador.crear(nombre, habitacion);
-        contexto.obtenerServicioDispositivos().registrar(dispositivo);
-
-        if (dispositivo instanceof Luz luz) {
-            contexto.obtenerMediadorHogar().registrarLuz(luz);
-        }
+        contexto.registrarDispositivo(dispositivo);
 
         actualizarLista();
         etiquetaMensaje.setText(
@@ -150,12 +154,7 @@ public final class ControladorDispositivos extends ControladorNavegable {
             return;
         }
 
-        if (seleccionado instanceof Luz luz) {
-            contexto.obtenerMediadorHogar().quitarLuz(luz);
-        }
-
-        contexto.obtenerServicioDispositivos()
-                .eliminar(seleccionado.obtenerId());
+        contexto.eliminarDispositivo(seleccionado);
 
         actualizarLista();
         etiquetaMensaje.setText(
@@ -163,6 +162,46 @@ public final class ControladorDispositivos extends ControladorNavegable {
         );
     }
 
+    @FXML
+    private void crearGrupoLuces() {
+        List<Dispositivo> seleccionados = List.copyOf(
+                listaDispositivos.getSelectionModel().getSelectedItems()
+        );
+        if (seleccionados.isEmpty()) {
+            etiquetaMensaje.setText("Selecciona las luces que quieres agrupar.");
+            return;
+        }
+        GrupoDispositivos grupo = new GrupoDispositivos("Grupo de luces");
+        for (Dispositivo dispositivo : seleccionados) {
+            if (!(dispositivo instanceof DispositivoControlable controlable)) {
+                etiquetaMensaje.setText("El grupo acepta luces; quita los otros tipos de la selección.");
+                return;
+            }
+            grupo.agregar(controlable);
+        }
+        contexto.establecerGrupoLuces(grupo);
+        actualizarEtiquetaGrupo();
+        etiquetaMensaje.setText("Grupo creado con " + grupo.obtenerMiembros().size() + " luces.");
+    }
+
+    @FXML private void encenderGrupo() { ejecutarAccionGrupo(true); }
+    @FXML private void apagarGrupo() { ejecutarAccionGrupo(false); }
+
+    private void ejecutarAccionGrupo(boolean encender) {
+        GrupoDispositivos grupo = contexto.obtenerGrupoLuces();
+        if (grupo == null || grupo.estaVacio()) {
+            etiquetaMensaje.setText("Selecciona luces y crea un grupo primero.");
+            return;
+        }
+        if (encender) grupo.encender(); else grupo.apagar();
+        contexto.registrarEvento(
+                TipoEventoHogar.ACCION_GRUPO_EJECUTADA, grupo.obtenerId(),
+                grupo.obtenerHabitacion(),
+                (encender ? "Se encendió " : "Se apagó ") + grupo.obtenerNombre() + "."
+        );
+        actualizarLista();
+        etiquetaMensaje.setText((encender ? "Se encendió " : "Se apagó ") + grupo.obtenerNombre() + ".");
+    }
     @FXML
     private void ejecutarAccion() {
         Dispositivo seleccionado =
@@ -242,6 +281,10 @@ public final class ControladorDispositivos extends ControladorNavegable {
         }
 
         contexto.obtenerInvocadorComandos().ejecutar(comando);
+        if (!(seleccionado instanceof Luz)) {
+            contexto.registrarEvento(TipoEventoHogar.ESTADO_DISPOSITIVO_CAMBIADO,
+                    seleccionado.obtenerId(), seleccionado.obtenerHabitacion(), descripcion);
+        }
         actualizarLista();
         etiquetaMensaje.setText(descripcion);
     }
@@ -256,6 +299,8 @@ public final class ControladorDispositivos extends ControladorNavegable {
         }
 
         contexto.obtenerInvocadorComandos().deshacerUltimo();
+        contexto.registrarEvento(TipoEventoHogar.ESTADO_DISPOSITIVO_CAMBIADO, null, null,
+                "Se deshizo la última acción.");
         actualizarLista();
         etiquetaMensaje.setText("Se deshizo la última acción.");
     }
@@ -272,8 +317,14 @@ public final class ControladorDispositivos extends ControladorNavegable {
     }
 
     private void actualizarLista() {
-        listaDispositivos.getItems().setAll(
-                contexto.obtenerServicioDispositivos().listar()
-        );
+        listaDispositivos.getItems().setAll(contexto.obtenerServicioDispositivos().listar());
+        actualizarEtiquetaGrupo();
     }
+    private void actualizarEtiquetaGrupo() {
+        GrupoDispositivos grupo = contexto.obtenerGrupoLuces();
+        etiquetaGrupo.setText(grupo == null ? "Grupo de luces: no creado"
+                : grupo.obtenerNombre() + " — " + grupo.obtenerEtiquetaEstado());
+    }
+
+
 }

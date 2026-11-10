@@ -1,92 +1,52 @@
 # Hogares Inteligentes
 
-Base inicial para el parcial de Patrones de Diseño. Proyecto Maven para Java 21, JavaFX y FXML, pensado para abrirse directamente en IntelliJ IDEA.
+Aplicación de escritorio para administrar dispositivos y automatizaciones de un hogar inteligente. Usa Java 21, JavaFX, FXML y Maven.
+
+## Funciones que se pueden demostrar
+
+- Crear y eliminar luces, termostatos y cerraduras.
+- Aplicar acciones a dispositivos y deshacer la última.
+- Seleccionar varias luces, agruparlas y encenderlas o apagarlas juntas.
+- Crear reglas por habitación, elegir estrategias y activar o desactivar reglas.
+- Simular movimiento y ausencia en la sala.
+- Consultar eventos recientes; la pantalla se actualiza mientras está abierta.
+
+Los dispositivos y el historial se guardan en memoria y se reinician al cerrar la aplicación. El sensor es simulado; no se requiere hardware para la demostración.
 
 ## Abrir y ejecutar
 
-1. En IntelliJ IDEA, selecciona **Open** y elige la carpeta `hogares_inteligentes` (o su archivo `pom.xml`).
-2. Acepta la importación como proyecto Maven y espera a que IntelliJ descargue JavaFX.
-3. Verifica que el proyecto use un JDK 21.
-4. Ejecuta `AplicacionHogar` o la tarea Maven `javafx:run`.
+1. En IntelliJ IDEA, elige Open y selecciona esta carpeta o pom.xml.
+2. Importa el proyecto Maven y configura un JDK 21.
+3. Ejecuta co.edu.smarthome.app.AplicacionHogar o el comando mvn javafx:run.
 
-## Qué queda en esta base
+## Patrones y ubicación
 
-- Arranque JavaFX y una pantalla FXML mínima con acciones para encender y apagar una luz.
-- Modelo `Dispositivo` / `Luz` con identificador, nombre, habitación y estado.
-- `State`: `Luz` delega encendido/apagado a estados concretos `EstadoEncendido` y `EstadoApagado`.
-- `Observer`: `ObservadorDispositivo` recibe cambios; `ControladorHogar` actualiza la vista.
-- `Command`: `ComandoCambiarEstadoLuz`, `ComandoAjustarTemperatura` y `ComandoCambiarCerradura` implementan acciones reversibles; `InvocadorComandos` mantiene una pila. Falta conectarlos a la interfaz.
-- `Strategy` y `Mediator`: ya funcionan en la pantalla principal. Se puede elegir entre `EstrategiaEncenderLuzPorMovimiento` (enciende y la deja encendida) y `EstrategiaSeguirMovimiento` (enciende con movimiento y apaga cuando la habitación queda vacía). `MediadorHogar` recibe la lectura del sensor adaptado, busca las luces y reglas activas de esa habitación y aplica la estrategia.
-- `Factory Method`: `CreadorLuz`, `CreadorTermostato` y `CreadorCerradura` crean los dispositivos elegidos para esta base.
-- `Adapter`: `AdaptadorSensorMovimiento` adapta la lectura del sensor simulado al contrato que consume el mediador. Para la entrega falta reemplazar el simulador por una fuente real, si el grupo va a usar hardware.
-- `Composite`: `GrupoDispositivos` agrupa dispositivos; falta completar y conectar acciones grupales.
-- El modelo ya contempla hogar, habitaciones, luz, termostato, cerradura, reglas y eventos. Los servicios CRUD y repositorios en memoria permiten continuar sin decidir todavía una base de datos.
-- Dejamos controladores y vistas FXML para dispositivos, automatizaciones e historial como sitios concretos para que el equipo conecte las funciones.
+| Patrón | Clases | Uso que se muestra |
+|---|---|---|
+| Observer | model/device/Luz, observer/ObservadorDispositivo, service/ContextoAplicacion | La luz notifica cambios de estado; el controlador actualiza la vista y el contexto registra eventos. ServicioHistorial notifica la pantalla de actividad. |
+| State | model/state/EstadoDispositivo, EstadoEncendido, EstadoApagado | La luz delega encendido y apagado a su estado actual. |
+| Strategy | strategy/EstrategiaAutomatizacion y sus estrategias concretas | Se elige cómo responde la luz al movimiento. |
+| Command | command/Command, comandos de dispositivo, InvocadorComandos | Las acciones se encapsulan y la última puede deshacerse desde Dispositivos. |
+| Mediator | mediator/MediadorHogar | Coordina lecturas, reglas y luces por habitación. Solo una regla activa por habitación evita estrategias en conflicto. |
+| Factory Method | factory/CreadorDispositivo y creadores concretos | La interfaz crea dispositivos sin acoplarse a cada constructor. |
+| Adapter | adapter/AdaptadorSensorMovimiento y contratos de sensor | Convierte la lectura numérica simulada al formato booleano que consume el mediador. |
+| Composite | model/device/DispositivoControlable, composite/GrupoDispositivos | La pantalla agrupa luces seleccionadas y aplica una acción común al grupo. |
 
-La pantalla principal también permite probar las dos estrategias con lecturas simuladas de movimiento y ausencia. El sensor pasa por `AdaptadorSensorMovimiento`, y el mediador coordina la regla y la luz de la sala. Las demás piezas siguen siendo contratos o esqueletos; no contemos un patrón como terminado hasta integrarlo en una función que se pueda demostrar.
+La selección adicional es Factory Method (2), Adapter (2) y Composite (3): tres patrones, ambas categorías y complejidad total 7.
 
-## Diagrama de arquitectura
+## Arquitectura
 
-```mermaid
-flowchart TD
-    V[Vista JavaFX / FXML] --> C[Controladores]
-    C --> S[Servicios de aplicación]
-    S --> M[Modelos del dominio]
-    S --> R[Repositorios]
-    C --> CM[Command]
-    M --> STR[Strategy]
-    STR --> MED[Mediator]
-    MED --> M
-```
+Consulta [la guía de arquitectura y clases](docs/architecture.md) para ver las responsabilidades de los paquetes y los flujos del código.
 
-## Paquetes y clases principales
+La interfaz FXML llama a controladores, que coordinan servicios y modelos. Los servicios usan repositorios en memoria. ContextoAplicacion comparte esos componentes durante la ejecución.
 
-```text
-co.edu.smarthome
-├── app          Inicio de JavaFX
-├── controller   ControladorHogar, ControladorDispositivos,
-│                ControladorAutomatizaciones, ControladorHistorial
-├── model
-│   ├── home     `Hogar`, `Habitacion`
-│   ├── device   `Dispositivo`, `Luz`, `Termostato`, `CerraduraInteligente`
-│   ├── automation `ReglaAutomatizacion`
-│   ├── event    `EventoHogar`, `TipoEventoHogar`
-│   └── state    `EstadoDispositivo`, `EstadoEncendido`, `EstadoApagado` (State)
-├── observer     `ObservadorDispositivo`, `ObservadorEventosHogar` (Observer)
-├── command      `Command`, comandos de luz/termostato/cerradura, `InvocadorComandos`
-├── strategy     `EstrategiaAutomatizacion`, `EstrategiaEncenderLuzPorMovimiento`,
-│                `EstrategiaSeguirMovimiento`
-├── mediator     `MediadorHogar` (Mediator)
-├── factory      Creadores de luz, termostato y cerradura (Factory Method)
-├── adapter      `SensorMovimiento`, `AdaptadorSensorMovimiento` (Adapter)
-├── composite    `GrupoDispositivos` (Composite)
-├── service      Servicios de hogares, dispositivos, automatizaciones e historial
-└── repository   Contratos y repositorios temporales en memoria
-```
+## Guion de demostración y entrega
 
-## Que se hizo
-La idea de esta primera parte es dejar los paquetes y las clases que ya acordamos para el alcance, más un ejemplo pequeño que sí se puede ejecutar. Así todos pueden abrir el proyecto, repartirse esos archivos y continuar sobre la misma estructura. No estamos diciendo que el sistema completo ya esté terminado.
-
-### Lo que ya dejamos andando o preparado
-
-- Dejamos Maven, JavaFX, el árbol de paquetes, el diagrama y una guía para abrirlo en IntelliJ.
-- La pantalla de `vista-hogar.fxml` permite encender y apagar una luz. El recorrido es vista → `ControladorHogar` → `Luz`; cuando cambia el estado, `ObservadorDispositivo` avisa para actualizar la pantalla. Ese es el ejemplo que podemos usar para guiarnos.
-- `Luz`, `EstadoDispositivo`, `EstadoEncendido` y `EstadoApagado` ya muestran el patrón State.
-- También dejamos modelos para `Hogar`, `Habitacion`, `Termostato`, `CerraduraInteligente`, `ReglaAutomatizacion` y eventos del dominio.
-- `ServicioDispositivos`, `ServicioHogares`, `ServicioAutomatizaciones` y `ServicioHistorial` ya se apoyan en sus interfaces de repositorio; las implementaciones actuales guardan datos en memoria, no en disco.
-- Dejamos controladores y FXML de dispositivos, automatizaciones e historial. Sus botones muestran los puntos pendientes para que el equipo conecte las funciones.
-- Las clases de patrones ya están organizadas. La pantalla principal solo demuestra el flujo completo de la luz; los patrones que faltan deben conectarse antes de darlos por terminados.
-
-### Reparto sugerido para seguir
-
-1. **Pantallas:** completar `ControladorDispositivos`, `ControladorAutomatizaciones` y `ControladorHistorial`, sus vistas FXML y la navegación desde `ControladorHogar`.
-2. **Hogar y dispositivos:** conectar `Hogar` / `Habitacion` con `ServicioHogares` y `ServicioDispositivos`; terminar formularios y acciones para luz, termostato y cerradura. Aquí también se pueden ampliar los creadores Factory Method.
-3. **Automatización y sensores:** reemplazar el sensor simulado por una fuente real, si se va a usar; permitir crear y guardar varias reglas y habitaciones desde `ServicioAutomatizaciones`, y conectarlas a sus dispositivos.
-4. **Acciones, grupos e historial:** conectar `InvocadorComandos` a la interfaz, completar acciones de `GrupoDispositivos` y mostrar eventos con `ServicioHistorial`.
-5. **Integración y entrega:** acordar si se necesita guardar en archivo o base de datos, sustituir los repositorios en memoria si hace falta y preparar documentación, demo y video.
-
-
-
-## Patrones del parcial
-
-Obligatorios: Observer, Strategy, Command, State y Mediator. Selección adicional propuesta: Factory Method (creacional, peso 2), Adapter (estructural, peso 2) y Composite (estructural, peso 3); suma de complejidad: 7. Strategy y Mediator ya se demuestran con el sensor simulado y la luz de la sala; los demás patrones deben conectarse a sus flujos reales antes de la entrega.
+1. Crear dispositivos y explicar Factory Method.
+2. Encender una luz y ubicar State y Observer.
+3. Aplicar una acción y deshacerla para mostrar Command.
+4. Seleccionar varias luces, crear el grupo y encenderlo/apagarlo para mostrar Composite.
+5. Comparar las estrategias con movimiento y ausencia; explicar Adapter y Mediator.
+6. Abrir Historial, realizar una acción y mostrar el evento nuevo.
+7. Cada integrante debe aparecer, explicar su contribución y ubicar en el código el patrón que presenta.
+8. Mantener commits progresivos, Pull Requests y merges atribuibles a cada integrante. Incluir los enlaces requeridos al repositorio y al video en la entrega.

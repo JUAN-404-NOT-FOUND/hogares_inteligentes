@@ -2,6 +2,7 @@ package co.edu.smarthome.command;
 
 import co.edu.smarthome.model.device.Luz;
 
+/** Comando reversible que cambia una luz y conserva su estado anterior para deshacer la acción. */
 public final class ComandoCambiarEstadoLuz implements Command {
     private final Luz luz;
     private final boolean encenderDestino;

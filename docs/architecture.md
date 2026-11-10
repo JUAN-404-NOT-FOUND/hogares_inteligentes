@@ -1,72 +1,66 @@
-# Arquitectura base del proyecto
+# Arquitectura y guía del código
 
-Esta organización deja puestos los lugares donde vamos a trabajar. Solo el flujo de la luz está conectado de principio a fin; los demás controladores y vistas muestran dónde continuar. Las interfaces de repositorio y sus versiones en memoria sirven como base para que el equipo agregue la persistencia que decida.
+## Propósito
 
-## Capas
+Aplicación de escritorio para administrar dispositivos de un hogar inteligente, definir automatizaciones por habitación y consultar la actividad reciente. La interfaz usa JavaFX y FXML; Maven administra la compilación y las dependencias. La aplicación inicia en `co.edu.smarthome.app.AplicacionHogar`.
+
+## Organización del código
+
+| Paquete | Responsabilidad | Clases principales |
+|---|---|---|
+| `app` | Arranque de JavaFX y composición inicial | `AplicacionHogar` |
+| `controller` | Acciones de interfaz, navegación y ciclo de vida de vistas | `ControladorHogar`, `ControladorDispositivos`, `ControladorAutomatizaciones`, `ControladorHistorial`, `NavegadorHogar` |
+| `model.home` | Hogares, habitaciones y agrupación de dispositivos | `Hogar`, `Habitacion` |
+| `model.device` | Dispositivos y contratos de control | `Dispositivo`, `Luz`, `Termostato`, `CerraduraInteligente`, `DispositivoControlable` |
+| `model.state` | Estados de la luz | `ContextoLuz`, `EstadoDispositivo`, `EstadoEncendido`, `EstadoApagado` |
+| `model.automation` | Reglas configurables | `ReglaAutomatizacion` |
+| `model.event` | Tipos y datos de actividad | `EventoHogar`, `TipoEventoHogar` |
+| `service` | Casos de uso y ensamblaje de dependencias | `ContextoAplicacion`, `ServicioDispositivos`, `ServicioHogares`, `ServicioAutomatizaciones`, `ServicioHistorial` |
+| `repository` | Contratos de almacenamiento | `RepositorioDispositivos`, `RepositorioHogares`, `RepositorioReglas`, `RepositorioEventos` |
+| `repository.memory` | Almacenamiento temporal en memoria | Implementaciones `Repositorio*Memoria` |
+| `command` | Acciones ejecutables y reversibles | `Command`, comandos concretos, `InvocadorComandos` |
+| `observer` | Contratos de notificación de cambios y eventos | `ObservadorDispositivo`, `ObservadorEventosHogar` |
+| `strategy` | Políticas de respuesta ante movimiento | `EstrategiaAutomatizacion` y estrategias concretas |
+| `mediator` | Coordinación entre sensor, reglas y luces | `MediadorHogar` |
+| `factory` | Creación desacoplada de dispositivos | `CreadorDispositivo` y creadores concretos |
+| `adapter` | Normalización de la lectura del sensor | `SensorMovimiento`, `SensorMovimientoAntiguo`, `AdaptadorSensorMovimiento` |
+| `composite` | Operación conjunta de luces seleccionadas | `GrupoDispositivos` |
+
+## Dependencias y flujo
 
 ```mermaid
 flowchart TD
-    V[JavaFX / FXML] --> C[Controladores]
-    C --> S[Servicios]
-    S --> M[Modelos: hogar, habitaciones, dispositivos, reglas y eventos]
-    S --> R[Repositorios]
-    R --> DB[Memoria ahora / persistencia por definir]
+    FXML[Vistas FXML] --> C[Controladores]
+    C --> S[Servicios / ContextoAplicacion]
+    S --> M[Modelos de dominio]
+    S --> R[Contratos de repositorio]
+    R --> RM[Implementaciones en memoria]
+    C --> N[NavegadorHogar]
     M --> O[Observer]
     M --> ST[State]
-    S --> CM[Command]
-    S --> STR[Strategy]
-    S --> MED[Mediator]
-    S --> F[Factory Method]
-    S --> AD[Adapter]
-    S --> CO[Composite]
+    C --> CMD[Command / InvocadorComandos]
+    S --> MED[MediadorHogar]
+    MED --> STR[Strategy]
+    MED --> AD[Adapter de sensor]
+    C --> FM[Factory Method]
+    C --> CO[Composite de luces]
 ```
 
-## Paquetes y clases
+`AplicacionHogar` crea el `ContextoAplicacion` y el navegador. El contexto comparte servicios, repositorios en memoria, el mediador y el invocador de comandos. Los controladores solicitan operaciones a esos componentes y actualizan las vistas.
 
-```text
-co.edu.smarthome
-├── app                 AplicacionHogar
-├── controller          ControladorHogar, ControladorDispositivos,
-│                       ControladorAutomatizaciones, ControladorHistorial
-├── model
-│   ├── home            Hogar, Habitacion
-│   ├── device          Dispositivo, Luz, Termostato, CerraduraInteligente
-│   ├── automation      ReglaAutomatizacion
-│   ├── event           EventoHogar, TipoEventoHogar
-│   └── state           ContextoLuz, EstadoDispositivo,
-│                       EstadoEncendido, EstadoApagado
-├── observer            ObservadorDispositivo, ObservadorEventosHogar
-├── command             Command, ComandoCambiarEstadoLuz, InvocadorComandos
-├── strategy            EstrategiaAutomatizacion,
-│                       EstrategiaEncenderLuzPorMovimiento
-├── mediator             MediadorHogar
-├── factory              CreadorDispositivo, CreadorLuz,
-│                       CreadorTermostato, CreadorCerradura
-├── adapter              SensorMovimiento, SensorMovimientoAntiguo,
-│                       AdaptadorSensorMovimiento
-├── composite             GrupoDispositivos
-├── service               ServicioDispositivos, ServicioHogares,
-│                       ServicioAutomatizaciones, ServicioHistorial
-└── repository            RepositorioDispositivos, RepositorioHogares,
-                        RepositorioReglas, RepositorioEventos
-    └── memory            RepositorioDispositivosMemoria,
-                        RepositorioHogaresMemoria, RepositorioReglasMemoria,
-                        RepositorioEventosMemoria
-```
+## Flujos principales
 
-## Flujos que ya se pueden ejecutar
+- **Luz y estado:** `ControladorHogar` acciona `Luz`; la luz delega en `EstadoEncendido` o `EstadoApagado` y notifica a `ObservadorDispositivo` al cambiar.
+- **Automatización:** el sensor simulado entrega una lectura numérica; `AdaptadorSensorMovimiento` la convierte a booleano; `MediadorHogar` busca la regla activa de la habitación y ejecuta su `EstrategiaAutomatizacion`.
+- **Reglas:** el mediador permite como máximo una regla activa por habitación. Registrar una regla nueva no desplaza la activa; activar otra desactiva la anterior en esa habitación.
+- **Comandos:** `InvocadorComandos` ejecuta acciones encapsuladas y conserva el historial necesario para deshacer la última.
+- **Grupos:** `GrupoDispositivos` implementa `DispositivoControlable` y aplica encendido o apagado a sus miembros seleccionados.
+- **Eventos:** `ContextoAplicacion` registra eventos en `ServicioHistorial`; la pantalla de historial se suscribe mientras está visible y se desuscribe al ocultarse.
 
-`vista-hogar.fxml` → `ControladorHogar` → `Luz` → `EstadoApagado` / `EstadoEncendido` → `ObservadorDispositivo` → actualización de la pantalla.
+## Persistencia y límites actuales
 
-`vista-hogar.fxml` → `ControladorHogar` → `AdaptadorSensorMovimiento` → `MediadorHogar` → regla activa de la sala → estrategia elegida → cambio del estado de `Luz` → Observer actualiza la pantalla.
+Los repositorios concretos guardan datos en memoria: hogares, dispositivos, reglas y eventos se pierden al cerrar el proceso. El sensor de movimiento es simulado y no requiere hardware. Las interfaces de repositorio permiten sustituir el almacenamiento si el alcance futuro lo necesita.
 
-## Pendiente de integración
+## Ejecutar
 
-- Las pantallas de dispositivos, automatizaciones e historial son puntos de partida: conectar sus controladores con los servicios y completar las acciones.
-- Registrar los dispositivos creados en `ServicioDispositivos` y asignarlos a `Habitacion` y `Hogar`.
-- Reemplazar el sensor simulado por una fuente real, si el grupo va a usar hardware, y administrar varias reglas desde `ServicioAutomatizaciones`.
-- Usar `InvocadorComandos` desde la interfaz para ejecutar y deshacer acciones; ampliar los comandos cuando existan más dispositivos.
-- Completar operaciones sobre todos los miembros de `GrupoDispositivos`.
-- Cambiar los repositorios en memoria por la persistencia que acuerde el grupo, si el alcance lo requiere.
-
-Los patrones solo se pueden presentar como implementados cuando participen en esos flujos; que exista una clase con el nombre del patrón no alcanza para la evaluación.
+Abre el proyecto o `pom.xml` en IntelliJ IDEA, configura JDK 21 e importa Maven. Ejecuta `co.edu.smarthome.app.AplicacionHogar` o usa `mvn javafx:run` desde la raíz del proyecto.

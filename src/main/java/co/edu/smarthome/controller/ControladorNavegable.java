@@ -13,6 +13,9 @@ public abstract class ControladorNavegable {
         this.navegador = navegador;
     }
 
+    /** Libera los observadores propios de la vista al navegar a otra pantalla. */
+    public void alOcultar() { }
+
     @FXML
     public final void irAInicio() {
         navegador.mostrarInicio();

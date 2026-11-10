@@ -2,6 +2,7 @@ package co.edu.smarthome.adapter;
 
 import java.util.Objects;
 
+/** Adapta el nivel numérico del sensor legado a la lectura booleana usada por el mediador. */
 public final class AdaptadorSensorMovimiento implements SensorMovimiento {
     private final SensorMovimientoAntiguo sensorAntiguo;
 

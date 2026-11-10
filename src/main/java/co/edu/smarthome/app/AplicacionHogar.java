@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/** Punto de entrada JavaFX: crea el contexto compartido y muestra la ventana principal. */
 public class AplicacionHogar extends Application {
     @Override
     public void start(Stage stage) {

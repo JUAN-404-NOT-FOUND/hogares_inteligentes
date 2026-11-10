@@ -3,6 +3,7 @@ package co.edu.smarthome.controller;
 import co.edu.smarthome.model.automation.ReglaAutomatizacion;
 import co.edu.smarthome.model.device.Dispositivo;
 import co.edu.smarthome.model.device.Luz;
+import co.edu.smarthome.model.event.TipoEventoHogar;
 import co.edu.smarthome.service.ContextoAplicacion;
 import co.edu.smarthome.strategy.EstrategiaAutomatizacion;
 import co.edu.smarthome.strategy.EstrategiaEncenderLuzPorMovimiento;
@@ -17,6 +18,7 @@ import javafx.scene.control.TextInputDialog;
 import java.util.List;
 import java.util.Optional;
 
+/** Gestiona la vista de reglas, su estrategia seleccionada y su activación por habitación. */
 public final class ControladorAutomatizaciones
         extends ControladorNavegable {
 
@@ -123,9 +125,13 @@ public final class ControladorAutomatizaciones
 
         contexto.obtenerServicioAutomatizaciones().registrar(regla);
         contexto.obtenerMediadorHogar().registrarRegla(regla);
+        contexto.registrarEvento(TipoEventoHogar.AUTOMATIZACION_CONFIGURADA,
+                regla.obtenerId(), regla.obtenerHabitacion(), "Se creó la regla " + regla.obtenerNombre() + ".");
 
         actualizarLista();
-        etiquetaMensaje.setText("Se creó la regla " + nombre + ".");
+        etiquetaMensaje.setText(regla.estaActiva()
+                ? "Se creó la regla " + nombre + "."
+                : "Se creó " + nombre + " inactiva; ya hay otra regla activa en esa habitación.");
     }
 
     @FXML
@@ -145,9 +151,10 @@ public final class ControladorAutomatizaciones
             return;
         }
 
-        seleccionada.cambiarEstrategia(
-                crearEstrategia(estrategiaElegida.get())
-        );
+        seleccionada.cambiarEstrategia(crearEstrategia(estrategiaElegida.get()));
+        contexto.registrarEvento(TipoEventoHogar.AUTOMATIZACION_CONFIGURADA,
+                seleccionada.obtenerId(), seleccionada.obtenerHabitacion(),
+                "Se cambió la estrategia de " + seleccionada.obtenerNombre() + ".");
 
         actualizarLista();
         etiquetaMensaje.setText(
@@ -174,12 +181,15 @@ public final class ControladorAutomatizaciones
                     "Se desactivó " + seleccionada.obtenerNombre() + "."
             );
         } else {
-            seleccionada.activar();
+            contexto.obtenerMediadorHogar().activarRegla(seleccionada);
             etiquetaMensaje.setText(
                     "Se activó " + seleccionada.obtenerNombre() + "."
             );
         }
 
+        contexto.registrarEvento(TipoEventoHogar.AUTOMATIZACION_CONFIGURADA,
+                seleccionada.obtenerId(), seleccionada.obtenerHabitacion(),
+                (seleccionada.estaActiva() ? "Se activó " : "Se desactivó ") + seleccionada.obtenerNombre() + ".");
         actualizarLista();
     }
 

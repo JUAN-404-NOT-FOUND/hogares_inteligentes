@@ -3,6 +3,7 @@ package co.edu.smarthome.controller;
 import co.edu.smarthome.adapter.AdaptadorSensorMovimiento;
 import co.edu.smarthome.adapter.SensorMovimientoAntiguo;
 import co.edu.smarthome.model.device.Luz;
+import co.edu.smarthome.model.event.TipoEventoHogar;
 import co.edu.smarthome.observer.ObservadorDispositivo;
 import co.edu.smarthome.service.ContextoAplicacion;
 import co.edu.smarthome.strategy.EstrategiaEncenderLuzPorMovimiento;
@@ -11,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 
+/** Conecta la pantalla principal con la luz de la sala, el sensor simulado y sus automatizaciones. */
 public class ControladorHogar extends ControladorNavegable
         implements ObservadorDispositivo {
 
@@ -23,6 +25,7 @@ public class ControladorHogar extends ControladorNavegable
     @FXML private ComboBox<String> selectorEstrategia;
 
     private boolean movimientoDetectado;
+    private final ObservadorDispositivo observadorPantalla = this::alCambiarEstadoDispositivo;
     private final Luz luzSala;
     private final SensorMovimientoAntiguo sensorAntiguo =
             () -> movimientoDetectado ? 1 : 0;
@@ -39,7 +42,7 @@ public class ControladorHogar extends ControladorNavegable
 
     @FXML
     private void initialize() {
-        luzSala.agregarObservador(this);
+        luzSala.agregarObservador(observadorPantalla);
 
         selectorEstrategia.getItems().setAll(
                 ESTRATEGIA_ENCENDER,
@@ -67,8 +70,9 @@ public class ControladorHogar extends ControladorNavegable
     @FXML
     private void simularMovimiento() {
         movimientoDetectado = true;
-        contexto.obtenerMediadorHogar()
-                .procesarLectura("sala", sensorAdaptado);
+        contexto.obtenerMediadorHogar().procesarLectura("sala", sensorAdaptado);
+        contexto.registrarEvento(TipoEventoHogar.MOVIMIENTO_DETECTADO, null, "sala",
+                movimientoDetectado ? "Se detectó movimiento en la sala." : "No se detectó movimiento en la sala.");
         etiquetaMensaje.setText(
                 "El mediador recibió movimiento en la sala y aplicó la estrategia elegida."
         );
@@ -77,14 +81,16 @@ public class ControladorHogar extends ControladorNavegable
     @FXML
     private void simularAusencia() {
         movimientoDetectado = false;
-        contexto.obtenerMediadorHogar()
-                .procesarLectura("sala", sensorAdaptado);
+        contexto.obtenerMediadorHogar().procesarLectura("sala", sensorAdaptado);
+        contexto.registrarEvento(TipoEventoHogar.MOVIMIENTO_DETECTADO, null, "sala",
+                movimientoDetectado ? "Se detectó movimiento en la sala." : "No se detectó movimiento en la sala.");
         etiquetaMensaje.setText(
                 "El mediador recibió que no hay movimiento y aplicó la estrategia elegida."
         );
     }
 
     private void cambiarEstrategia() {
+        contexto.obtenerMediadorHogar().activarRegla(contexto.obtenerReglaSala());
         if (ESTRATEGIA_SEGUIR.equals(selectorEstrategia.getValue())) {
             contexto.obtenerReglaSala().cambiarEstrategia(
                     new EstrategiaSeguirMovimiento()
@@ -95,9 +101,10 @@ public class ControladorHogar extends ControladorNavegable
             );
         }
 
-        etiquetaMensaje.setText(
-                "Estrategia activa: " + selectorEstrategia.getValue() + "."
-        );
+        contexto.registrarEvento(TipoEventoHogar.AUTOMATIZACION_CONFIGURADA,
+                contexto.obtenerReglaSala().obtenerId(), "sala",
+                "Se seleccionó la estrategia " + selectorEstrategia.getValue() + ".");
+        etiquetaMensaje.setText("Estrategia activa: " + selectorEstrategia.getValue() + ".");
     }
 
     private void actualizarEstado() {
@@ -106,6 +113,11 @@ public class ControladorHogar extends ControladorNavegable
                         + " · "
                         + luzSala.obtenerEstado().obtenerEtiqueta()
         );
+    }
+
+    @Override
+    public void alOcultar() {
+        luzSala.eliminarObservador(observadorPantalla);
     }
 
     @Override
